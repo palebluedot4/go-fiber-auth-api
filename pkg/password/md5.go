@@ -13,21 +13,29 @@ import (
 
 type MD5Hasher struct{}
 
-// var _ Hasher = (*MD5Hasher)(nil) // DO NOT UNCOMMENT
+// var _ Hasher = (*MD5Hasher)(nil)
 
 // func NewMD5Hasher() *MD5Hasher {
 // 	return &MD5Hasher{}
 // }
 
 func (h *MD5Hasher) Hash(password string) (string, error) {
-	sum := md5.Sum([]byte(password))
-	return hex.EncodeToString(sum[:]), nil
+	hashBytes := h.generateHash(password)
+	return hex.EncodeToString(hashBytes), nil
 }
 
-func (h *MD5Hasher) Verify(password, hash string) bool {
-	computedHash, err := h.Hash(password)
+func (h *MD5Hasher) Verify(hashedPassword, password string) bool {
+	storedHashBytes, err := hex.DecodeString(hashedPassword)
 	if err != nil {
 		return false
 	}
-	return subtle.ConstantTimeCompare([]byte(computedHash), []byte(hash)) == 1
+
+	comparisonHashBytes := h.generateHash(password)
+
+	return subtle.ConstantTimeCompare(storedHashBytes, comparisonHashBytes) == 1
+}
+
+func (h *MD5Hasher) generateHash(password string) []byte {
+	sum := md5.Sum([]byte(password))
+	return sum[:]
 }
