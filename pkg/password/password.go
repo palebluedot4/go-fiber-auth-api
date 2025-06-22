@@ -2,5 +2,5 @@ package password
 
 type Hasher interface {
 	Hash(password string) (string, error)
-	Verify(password, hash string) bool
+	Verify(hashedPassword, password string) bool
 }
