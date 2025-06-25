@@ -1,9 +1,10 @@
 package password
 
 import (
-	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/hex"
+
+	"github.com/palebluedot4/go-fiber-auth-api/internal/crypto/hashutil"
 )
 
 // ================================================================================
@@ -20,7 +21,7 @@ type SHA256Hasher struct{}
 // }
 
 func (h *SHA256Hasher) Hash(password string) (string, error) {
-	hashBytes := h.generateHash(password)
+	hashBytes := hashutil.SHA256String(password)
 	return hex.EncodeToString(hashBytes), nil
 }
 
@@ -30,12 +31,7 @@ func (h *SHA256Hasher) Verify(hashedPassword, password string) bool {
 		return false
 	}
 
-	comparisonHashBytes := h.generateHash(password)
+	comparisonHashBytes := hashutil.SHA256String(password)
 
 	return subtle.ConstantTimeCompare(storedHashBytes, comparisonHashBytes) == 1
-}
-
-func (h *SHA256Hasher) generateHash(password string) []byte {
-	sum := sha256.Sum256([]byte(password))
-	return sum[:]
 }
