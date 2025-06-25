@@ -3,7 +3,7 @@ package password_test
 import (
 	"testing"
 
-	"github.com/palebluedot4/go-fiber-auth-api/pkg/password"
+	"github.com/palebluedot4/go-fiber-auth-api/internal/security/password"
 )
 
 func TestPasswordHasher(t *testing.T) {

@@ -1,9 +1,10 @@
 package password
 
 import (
-	"crypto/md5"
 	"crypto/subtle"
 	"encoding/hex"
+
+	"github.com/palebluedot4/go-fiber-auth-api/internal/crypto/hashutil"
 )
 
 // ================================================================================
@@ -20,7 +21,7 @@ type MD5Hasher struct{}
 // }
 
 func (h *MD5Hasher) Hash(password string) (string, error) {
-	hashBytes := h.generateHash(password)
+	hashBytes := hashutil.MD5String(password)
 	return hex.EncodeToString(hashBytes), nil
 }
 
@@ -30,12 +31,7 @@ func (h *MD5Hasher) Verify(hashedPassword, password string) bool {
 		return false
 	}
 
-	comparisonHashBytes := h.generateHash(password)
+	comparisonHashBytes := hashutil.MD5String(password)
 
 	return subtle.ConstantTimeCompare(storedHashBytes, comparisonHashBytes) == 1
-}
-
-func (h *MD5Hasher) generateHash(password string) []byte {
-	sum := md5.Sum([]byte(password))
-	return sum[:]
 }
